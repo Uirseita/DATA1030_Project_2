@@ -204,6 +204,7 @@ census_df['household_mean_income'] = census_df[['household_mean_income',
 
 census_df.drop(columns='household_median_income', inplace=True)
 census_df.replace('-', 0.0, inplace=True)
+census_df.household_mean_income = census_df.household_mean_income.astype(float)
 
 census_df.to_csv('../Car_Crash/Data/census_data_cleaned.csv', index=False)
 
