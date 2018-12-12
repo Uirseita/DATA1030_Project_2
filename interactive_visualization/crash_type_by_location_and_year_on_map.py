@@ -32,10 +32,8 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-crash_type_list = ['All Types']
-crash_type_list.extend(df1.Collision_Type.unique().tolist())
-year_list = ['All Years']
-year_list.extend(df1.Crash_Year.sort_values().unique().tolist())
+crash_type_list = df1.Collision_Type.unique().tolist()
+year_list = df1.Crash_Year.sort_values().unique().tolist()
 
 app.layout = html.Div([
     html.Div([
@@ -43,15 +41,16 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id='crash_type',
                 options=[{'label': i, 'value': i} for i in crash_type_list],
-                value='All Types',
+                value=crash_type_list,
+                multi=True
             ),
             dcc.Dropdown(
                 id='year',
                 options=[{'label': i, 'value': i} for i in year_list],
-                value='All Years'
+                value=year_list,
+                multi=True
             )
-        ],
-            style={'width': '20%', 'display': 'inline-block'})
+        ], style={'width': '20%', 'display': 'inline-block'})
     ]),
 
     dcc.Graph(id='indicator-graphic')
@@ -69,10 +68,8 @@ def update_graph(crash_type, year):
            [6 / 9, "rgb(0, 0, 0)"], [7 / 9, "rgb(32, 241, 17)"],
            [8 / 9, "rgb(23, 245, 156)"], [1, "rgb(27, 248, 232)"]]
     plot_df = df1
-    if crash_type != 'All Types':
-        plot_df = plot_df[plot_df['Collision_Type'] == crash_type]
-    if year != 'All Years':
-        plot_df = plot_df[plot_df['Crash_Year'] == year]
+    plot_df = plot_df[plot_df['Collision_Type'].isin(crash_type)]
+    plot_df = plot_df[plot_df['Crash_Year'].isin(year)]
 
     # the maximum number of points on the mapbox object is 40K
     if plot_df.shape[0] > 40000:
